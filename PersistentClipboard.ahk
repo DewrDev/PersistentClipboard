@@ -104,7 +104,12 @@ ListFunc(){
         LV_GetText(RowText, A_EventInfo)  ; Get the text from the row's first field.
         ; LV_GetText(IncrementPaste, A_EventInfo,2)
         ; A_EventInfo
-        WinActivate,%Tabtitle%
+        
+        WinGet, OpenWindows, List
+            lastActive:= openwindows3
+            ; WinGetTitle, o, ahk_id %lastActive%
+        WinActivate,ahk_id %lastActive%
+        ; WinActivate,%Tabtitle%
         sendraw, %RowText%`n
 
         ; ToolTip You double-clicked row number %A_EventInfo%. Text: "%RowText%"
