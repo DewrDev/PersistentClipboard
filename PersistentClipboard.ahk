@@ -2,16 +2,17 @@
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-DetectHiddenWindows, on
-
+DetectHiddenWindows, off
+#include libraries\3rdparty\ini.ahk
 formattime, Year,, yyyy ;
 formattime, Date,, dd-MM-%year%
 FileCreateDir, %A_appdata%\DewrDev\PersistentClipboard
 global LogDir:= A_appdata "\DewrDev\PersistentClipboard\" Date ".log"
 global ConfigDir:= A_appdata "\DewrDev\PersistentClipboard\Config.ini"
 global DataDir:= A_appdata "\DewrDev\PersistentClipboard\Data.ini"
-; global StringsDir:= A_appdata "\DewrDev\PersistentClipboard\Strings.txt" ; actual stringdir. Uncomment and delete below line for non-development purposes.
-global StringsDir:= A_ScriptDir "\Strings.txt"
+global StringsDir:= A_appdata "\DewrDev\PersistentClipboard\Strings.ini"
+file=array()
+strings:= new ini(StringsDir)
 global GuiHwnd=
 global pastecount
 
@@ -36,11 +37,12 @@ Gui, Main:Add, ListView,vscroll y+0 vList h350 w%groupboxwidth% -Multi readonly 
 configure()
 Gui, Main:Default
 FileRead, StringsFile, %Stringsdir%
-loop, parse,StringsFile,»,`n %space% %tab%
+loop, % strings.sections().length()
 {
-    StringTrimRight, String, A_LoopField, 1
-    ; msgbox,---`n %string% `n---
-    LV_Add(,String, 0)
+    string:=strings.get("text","string" A_Index,"")
+    string:= StrReplace(string, "/~\" , "`n",,-1)
+    count:=strings.get("pastecount","string" A_Index,"")
+    LV_Add(,string, count)
     Edits:= ++Edits
     ; msgbox, Edit%edits%
     gui, config:add, edit,vEdit%Edits% w%guiWidth%,%string%
