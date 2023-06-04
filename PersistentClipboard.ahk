@@ -12,7 +12,7 @@ global ConfigDir:= A_appdata "\DewrDev\PersistentClipboard\Config.ini"
 global DataDir:= A_appdata "\DewrDev\PersistentClipboard\Data.ini"
 global StringsDir:= A_appdata "\DewrDev\PersistentClipboard\Strings.ini"
 file=array()
-strings:= new ini(StringsDir)
+global strings:= new ini(StringsDir)
 global GuiHwnd=
 global pastecount
 
@@ -29,7 +29,7 @@ AddBoxBtnWidth:= groupboxwidth - 25
 
 gui, Main:new, -MaximizeBox -Minimizebox +resize +MaxSize%guiWidth%x +MinSize%guiWidth%x +HwndGuiHwnd
 gui, Main:add, button,x0 y0 w%guiWidth% gConfigure vConfigBtn, Configure
-Gui, Main:Add, ListView,vscroll y+0 vList h350 w%groupboxwidth% -Multi readonly gListFunc AltSubmit, Clipboards|Paste Count
+Gui, Main:Add, ListView,vscroll y+0 vList h350 w%groupboxwidth% -Multi readonly gListFunc AltSubmit, index|Clipboards|Paste Count
 
 
 ; LV_ModifyCol() 
@@ -41,8 +41,8 @@ loop, % strings.sections().length()
 {
     string:=strings.get("text","string" A_Index,"")
     string:= StrReplace(string, "/~\" , "`n",,-1)
-    count:=strings.get("pastecount","string" A_Index,"")
-    LV_Add(,string, count)
+    count:=strings.get("pastecount","string" A_Index,"0")
+    LV_Add(,A_Index,string, count)
     Edits:= ++Edits
     ; msgbox, Edit%edits%
     gui, config:add, edit,vEdit%Edits% w%guiWidth%,%string%
@@ -64,8 +64,9 @@ loop, % strings.sections().length()
 ; LV_Add(, "Expected:`n`nActual:`n`nRepro - ", 0)
 ; LV_Add(, "Launch the content from the terminal menu", 0)
 ; LV_Add(, "Afternoon all, `nTesting is now complete for ", 0)
-LV_ModifyCol(2, "75 Integer")
-LV_ModifyCol(1, "225 Text")
+LV_ModifyCol(3, "75 Integer")
+LV_ModifyCol(2, "225 Text")
+LV_ModifyCol(1, "0 Integer")
 
 ; gui, 1:add, groupbox, vscroll w%groupboxwidth% h500, stuffs
 
@@ -99,9 +100,16 @@ loop, {
 
 return
 
-ListFunc(){
+ListFunc()
+{
     if (A_GuiEvent = "A"){
-        LV_GetText(RowText, A_EventInfo)  ; Get the text from the row's first field.
+        LV_GetText(RowText, A_EventInfo,2)  ; Get the text from the row's 'Clipboards' field.
+        LV_GetText(RowPasteCount, A_EventInfo,3)
+        LV_Modify(LV_GetNext(,F),,,, newCount:=++RowPasteCount)
+        LV_GetText(RowNum, A_EventInfo)
+        strings.set("pastecount","string"RowNum,newCount)
+        strings.save()
+        
         ; LV_GetText(IncrementPaste, A_EventInfo,2)
         ; A_EventInfo
         
