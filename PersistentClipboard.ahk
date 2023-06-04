@@ -16,10 +16,7 @@ global strings:= new ini(StringsDir)
 global GuiHwnd=
 global pastecount
 
-global flipit=1
-global flipem=0
 global Edits=0
-global runonce=0
 
 global ScriptTitle="Persistent Clipboard"
 global TabTitle="Create Issue - Jira"
@@ -124,11 +121,15 @@ ListFunc()
     }
 }
 
-Configure(){
+Configure()
+{
+    static runonce:=false
+    static flipit:=true
+    static flipem:=false
     if (runonce=0){
         gui, Config: new,MinimizeBox -border -Maximizebox +parentMain,
         ; gui, Config:add, text,, oh hi there
-        runonce=1
+        runonce:=true
         return
     }
     ; gui, config:destroy
