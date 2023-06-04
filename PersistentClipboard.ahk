@@ -20,7 +20,7 @@ global Edits=0
 
 global ScriptTitle="Persistent Clipboard"
 global TabTitle="Create Issue - Jira"
-guiWidth=300
+global guiWidth=300
 groupboxwidth:= guiWidth +1
 AddBoxBtnWidth:= groupboxwidth - 25
 
@@ -42,7 +42,7 @@ loop, % strings.sections().length()
     LV_Add(,A_Index,string, count)
     Edits:= ++Edits
     ; msgbox, Edit%edits%
-    gui, config:add, edit,vEdit%Edits% w%guiWidth%,%string%
+    gui, config:add, edit,vEdit%Edits% w%guiWidth% y+5 x7,%string%
     ; if (strlen(A_LoopField) != 1){
     ;     ; ColdLoads()
     ; }
@@ -127,6 +127,8 @@ Configure()
     static ConfigHidden:=true
     if (runonce=0){
         gui, Config: new,MinimizeBox -border -Maximizebox +parentMain,
+        gui, Config:add, button,% "w"guiwidth/2 " x"6 "y"10,Add
+        gui, Config:add, button,% "w"guiwidth/2 " x+1" "yp",Remove
         ; gui, Config:add, text,, oh hi there
         runonce:=true
         return
