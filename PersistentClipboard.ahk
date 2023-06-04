@@ -124,8 +124,7 @@ ListFunc()
 Configure()
 {
     static runonce:=false
-    static flipit:=true
-    static flipem:=false
+    static ConfigHidden:=true
     if (runonce=0){
         gui, Config: new,MinimizeBox -border -Maximizebox +parentMain,
         ; gui, Config:add, text,, oh hi there
@@ -133,24 +132,28 @@ Configure()
         return
     }
     ; gui, config:destroy
-    flipfloop := {1: "Hide", 0: "Show"}
-    guicontrol, % flipfloop[flipit], List
+    HideShow := {1: "Hide", 0: "Show"}
+    guicontrol, % HideShow[ConfigHidden], List
     EditLoopCount=0
 
-    flipit:= !flipit
-    flipem:= !flipem
-
+    if !ConfigHidden
+    {
+        loop, % strings.sections().length()
+        {
+            GuiControlGet, Edit_Value ,config:, Edit%A_Index%
+            if (Edit_Value != x:=StrReplace(strings.get("text","string" A_Index,""), "/~\" , "`n"))
+            {
+                LV_Modify(A_Index,,,Edit_Value)
+                strings.set("text","string" A_Index,x:=StrReplace(Edit_Value,"`n","/~\"))
+                strings.save()
+                ; msgbox, Edit_Value:`n`n%Edit_Value%`n`nx:`n%x%
+            }
+        }
+    }
+    ConfigHidden:= !ConfigHidden
+    
     WinGetPos, , , Width, Height, %ScriptTitle%
     gui, Config:show, h%Height% w%Width% x-10 y+15,
-
-    ; loop, Edits {
-    ; EditLoopCount:= ++EditLoopCount
-    ; msgbox, 
-    ; guicontrol, % flipfloop[flipit], Edit%EditLoopCount%
-    ; }
-    ; loop, %pastecount% {
-
-    ; }
 }
 
 SaveConfig(){
