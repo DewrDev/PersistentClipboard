@@ -150,8 +150,8 @@ Configure()
             }
         }
     }
+    GuiControl, main:text, ConfigBtn , % ConfigHidden ?  "Save + Return" : "Configure"
     ConfigHidden:= !ConfigHidden
-    
     WinGetPos, , , Width, Height, %ScriptTitle%
     gui, Config:show, h%Height% w%Width% x-10 y+15,
 }
